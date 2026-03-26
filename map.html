@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css"/>
@@ -14,11 +15,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
-    const lat = parseFloat(params.get("lat")) || 51.18;
-    const lon = parseFloat(params.get("lon")) || 71.44;
+    const lat = parseFloat((params.get("lat") || "").replace(",", ".")) || 51.18;
+    const lon = parseFloat((params.get("lon") || "").replace(",", ".")) || 71.44;
     const map = L.map("map").setView([lat, lon], 13);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-    // Пин "Я здесь"
+
     const myIcon = L.divIcon({
       html: '📍',
       iconSize: [30, 30],
@@ -30,9 +31,9 @@
        .bindPopup("Я здесь")
        .openPopup();
     }
-    // Загружаем точки из JSON
+
     const clusters = L.markerClusterGroup();
-    fetch("https://ahcarina711.github.io/map/points.json")
+    fetch("https://ahcarina711.github.io/map/points.json", { mode: "cors" })
       .then(r => r.json())
       .then(data => {
         data.forEach(point => {
@@ -48,7 +49,8 @@
           }
         });
         map.addLayer(clusters);
-      });
+      })
+      .catch(err => console.error("Ошибка загрузки точек:", err));
   </script>
 </body>
 </html>
