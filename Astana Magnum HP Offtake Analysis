@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offtake Dashboard — HP Magnum Astana — Февраль 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+
+  header {
+    background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+    padding: 20px 32px;
+    border-bottom: 1px solid #2d3748;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  header h1 { font-size: 20px; font-weight: 700; color: #f7fafc; letter-spacing: 0.5px; }
+  header span { font-size: 13px; color: #718096; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi-card {
+    background: #1a1f2e; border: 1px solid #2d3748; border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .kpi-card .label { font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .kpi-card .value { font-size: 28px; font-weight: 700; color: #f7fafc; }
+  .kpi-card .sub { font-size: 12px; color: #68d391; margin-top: 4px; }
+
+  .filters {
+    background: #1a1f2e; border: 1px solid #2d3748; border-radius: 12px;
+    padding: 16px 20px; margin-bottom: 24px;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  }
+  .filters label { font-size: 12px; color: #a0aec0; font-weight: 600; }
+
+  .brand-btn {
+    padding: 6px 16px; border-radius: 20px; border: 1.5px solid #4a5568;
+    background: transparent; color: #a0aec0; font-size: 12px; cursor: pointer;
+    transition: all 0.15s; font-weight: 600;
+  }
+  .brand-btn.active {
+    border-color: var(--color); color: var(--color);
+    background: color-mix(in srgb, var(--color) 15%, transparent);
+  }
+  .brand-btn:hover { opacity: 0.8; }
+
+  .date-range { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .date-range input[type=range] { accent-color: #667eea; width: 130px; }
+  .date-range span { font-size: 12px; color: #a0aec0; min-width: 46px; text-align: center; }
+  .reset-btn {
+    padding: 5px 12px; border-radius: 6px; border: 1px solid #4a5568;
+    background: transparent; color: #a0aec0; font-size: 11px; cursor: pointer;
+  }
+  .reset-btn:hover { border-color: #718096; color: #e2e8f0; }
+
+  .chart-full {
+    background: #1a1f2e; border: 1px solid #2d3748; border-radius: 12px;
+    padding: 22px 24px; margin-bottom: 20px;
+  }
+  .chart-full h2 {
+    font-size: 12px; color: #a0aec0; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px;
+  }
+  .chart-full canvas { max-height: 300px; }
+
+  .table-card { background: #1a1f2e; border: 1px solid #2d3748; border-radius: 12px; padding: 20px; }
+  .table-card h2 { font-size: 12px; color: #a0aec0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: right; padding: 8px 12px; color: #718096; font-weight: 600;
+    border-bottom: 1px solid #2d3748; font-size: 11px; text-transform: uppercase; white-space: nowrap;
+  }
+  thead th:first-child { text-align: left; }
+  tbody tr { border-bottom: 1px solid #1e2535; transition: background 0.1s; }
+  tbody tr:hover { background: #1e2535; }
+  tbody td { padding: 8px 12px; text-align: right; font-size: 13px; }
+  tbody td:first-child { text-align: left; font-weight: 600; color: #a0aec0; }
+  .total-row td { font-weight: 700 !important; background: #1e2535; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 Offtake Dashboard — HP Magnum Astana</h1>
+  <span>Февраль 2026</span>
+</header>
+
+<div class="container">
+
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="label">Всего продаж</div>
+      <div class="value" id="kpi-total">—</div>
+      <div class="sub" id="kpi-days">— дней</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Лидер бренд</div>
+      <div class="value" id="kpi-leader" style="font-size:20px;padding-top:4px">—</div>
+      <div class="sub" id="kpi-leader-share">—</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Среднее / день</div>
+      <div class="value" id="kpi-avg">—</div>
+      <div class="sub">штук в день</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Макс. день</div>
+      <div class="value" id="kpi-max">—</div>
+      <div class="sub" id="kpi-max-date">—</div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <label>Бренды:</label>
+    <div id="brand-buttons" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    <div class="date-range">
+      <label>Период:</label>
+      <span id="date-from-label"></span>
+      <input type="range" id="range-from" min="0" step="1">
+      <span style="color:#4a5568">—</span>
+      <input type="range" id="range-to" min="0" step="1">
+      <span id="date-to-label"></span>
+      <button class="reset-btn" onclick="resetDateRange()">Сброс</button>
+    </div>
+  </div>
+
+  <div class="chart-full">
+    <h2>📦 Продажи по дням (штук)</h2>
+    <canvas id="barCanvas"></canvas>
+  </div>
+
+  <div class="chart-full">
+    <h2>📊 Доля по дням (%)</h2>
+    <canvas id="shareCanvas"></canvas>
+  </div>
+
+  <div class="table-card">
+    <h2>Детальная таблица</h2>
+    <table>
+      <thead id="table-head"></thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const RAW = {
+  "2026-02-01":{"EVO":65,"KENT Sticks":103,"Neo":471,"Terea":1387,"Vogue":3,"WINSTON STICKS":16},
+  "2026-02-02":{"EVO":91,"KENT Sticks":148,"Neo":520,"Terea":1832,"WINSTON STICKS":23},
+  "2026-02-03":{"EVO":90,"KENT Sticks":135,"Neo":568,"Terea":1806,"Vogue":6,"WINSTON STICKS":15},
+  "2026-02-04":{"EVO":81,"KENT Sticks":153,"Neo":637,"Terea":1808,"Virto":1,"Vogue":1,"WINSTON STICKS":20},
+  "2026-02-05":{"EVO":83,"KENT Sticks":191,"Neo":817,"Terea":1782,"Vogue":1,"WINSTON STICKS":19},
+  "2026-02-06":{"EVO":91,"KENT Sticks":227,"Neo":950,"Terea":1991,"WINSTON STICKS":13},
+  "2026-02-07":{"EVO":60,"Heets":1,"KENT Sticks":187,"Neo":928,"Terea":1477,"Virto":1,"WINSTON STICKS":19},
+  "2026-02-08":{"EVO":60,"KENT Sticks":195,"Neo":841,"Terea":1429,"Virto":4,"WINSTON STICKS":26},
+  "2026-02-09":{"EVO":82,"KENT Sticks":225,"Neo":979,"Terea":1938,"WINSTON STICKS":21},
+  "2026-02-10":{"EVO":76,"Heets":1,"KENT Sticks":207,"Neo":1025,"Terea":1889,"Virto":2,"Vogue":1,"WINSTON STICKS":19},
+  "2026-02-11":{"EVO":83,"KENT Sticks":208,"Neo":979,"Terea":1800,"Vogue":1,"WINSTON STICKS":25},
+  "2026-02-12":{"EVO":78,"KENT Sticks":231,"Neo":988,"Terea":1907,"Virto":1,"WINSTON STICKS":30},
+  "2026-02-13":{"EVO":84,"KENT Sticks":216,"Neo":1082,"Terea":1868,"Virto":4,"Vogue":4,"WINSTON STICKS":11},
+  "2026-02-14":{"EVO":56,"KENT Sticks":206,"Neo":1000,"Terea":1526,"Virto":5,"Vogue":1,"WINSTON STICKS":23},
+  "2026-02-15":{"EVO":58,"KENT Sticks":191,"Neo":934,"Terea":1412,"Virto":6,"WINSTON STICKS":9},
+  "2026-02-16":{"EVO":90,"KENT Sticks":185,"Neo":1115,"Terea":1692,"Virto":7,"Vogue":4,"WINSTON STICKS":19},
+  "2026-02-17":{"EVO":58,"KENT Sticks":211,"Neo":1054,"Terea":1787,"Virto":17,"Vogue":1,"WINSTON STICKS":15},
+  "2026-02-18":{"EVO":79,"Heets":1,"KENT Sticks":224,"Neo":1047,"Terea":1602,"Virto":8,"WINSTON STICKS":9},
+  "2026-02-19":{"EVO":74,"KENT Sticks":185,"Neo":860,"Terea":1420,"Virto":17,"WINSTON STICKS":16},
+  "2026-02-20":{"EVO":85,"KENT Sticks":180,"Neo":955,"Terea":1557,"Virto":6,"WINSTON STICKS":6},
+  "2026-02-21":{"EVO":57,"KENT Sticks":184,"Neo":838,"Terea":1496,"Virto":9,"WINSTON STICKS":14},
+  "2026-02-22":{"EVO":59,"KENT Sticks":149,"Neo":898,"Terea":1356,"Virto":9,"WINSTON STICKS":11},
+  "2026-02-23":{"EVO":58,"KENT Sticks":227,"Neo":924,"Terea":1601,"Virto":16,"WINSTON STICKS":22},
+  "2026-02-24":{"EVO":77,"KENT Sticks":212,"Neo":925,"Terea":1578,"Virto":19,"WINSTON STICKS":14},
+  "2026-02-25":{"EVO":64,"KENT Sticks":163,"Neo":891,"Terea":1435,"Virto":11,"WINSTON STICKS":11},
+  "2026-02-26":{"EVO":66,"KENT Sticks":209,"Neo":976,"Terea":1445,"Virto":27,"WINSTON STICKS":17},
+  "2026-02-27":{"EVO":67,"KENT Sticks":168,"Neo":1089,"Terea":1667,"Virto":27,"WINSTON STICKS":19},
+  "2026-02-28":{"EVO":59,"Heets":1,"KENT Sticks":190,"Neo":873,"Terea":1347,"Virto":22,"WINSTON STICKS":13}
+};
+
+const ALL_BRANDS = ["Terea", "Neo", "KENT Sticks", "EVO", "WINSTON STICKS", "Virto", "Heets"];
+
+const COLORS = {
+  "Terea":          "#667eea",
+  "Neo":            "#48bb78",
+  "KENT Sticks":    "#f6ad55",
+  "EVO":            "#f687b3",
+  "WINSTON STICKS": "#fc8181",
+  "Virto":          "#76e4f7",
+  "Heets":          "#b794f4"
+};
+
+const ALL_DATES = Object.keys(RAW).sort();
+
+let activeBrands = new Set(ALL_BRANDS);
+let dateFrom = 0;
+let dateTo = ALL_DATES.length - 1;
+let barChart, shareChart;
+
+const btnContainer = document.getElementById('brand-buttons');
+
+ALL_BRANDS.forEach(b => {
+  const btn = document.createElement('button');
+  btn.className = 'brand-btn active';
+  btn.textContent = b;
+  btn.style.setProperty('--color', COLORS[b]);
+
+  btn.onclick = () => {
+    if (activeBrands.has(b)) {
+      if (activeBrands.size === 1) return;
+      activeBrands.delete(b);
+      btn.classList.remove('active');
+    } else {
+      activeBrands.add(b);
+      btn.classList.add('active');
+    }
+    render();
+  };
+
+  btnContainer.appendChild(btn);
+});
+
+const sliderFrom = document.getElementById('range-from');
+const sliderTo   = document.getElementById('range-to');
+
+sliderFrom.max = ALL_DATES.length - 1;
+sliderTo.max   = ALL_DATES.length - 1;
+sliderTo.value = ALL_DATES.length - 1;
+
+updateDateLabels();
+
+sliderFrom.addEventListener('input', () => {
+  dateFrom = +sliderFrom.value;
+  if (dateFrom > dateTo) {
+    dateTo = dateFrom;
+    sliderTo.value = dateTo;
+  }
+  updateDateLabels();
+  render();
+});
+
+sliderTo.addEventListener('input', () => {
+  dateTo = +sliderTo.value;
+  if (dateTo < dateFrom) {
+    dateFrom = dateTo;
+    sliderFrom.value = dateFrom;
+  }
+  updateDateLabels();
+  render();
+});
+
+function resetDateRange() {
+  dateFrom = 0;
+  dateTo = ALL_DATES.length - 1;
+  sliderFrom.value = 0;
+  sliderTo.value = dateTo;
+  updateDateLabels();
+  render();
+}
+
+function updateDateLabels() {
+  document.getElementById('date-from-label').textContent = ALL_DATES[dateFrom].slice(5);
+  document.getElementById('date-to-label').textContent   = ALL_DATES[dateTo].slice(5);
+}
+
+function getVal(date, brand) {
+  return RAW[date][brand] || 0;
+}
+
+function render() {
+  const dates  = ALL_DATES.slice(dateFrom, dateTo + 1);
+  const brands = ALL_BRANDS.filter(b => activeBrands.has(b));
+  const labels = dates.map(d => d.slice(5));
+
+  const dayTotals = dates.map(d => brands.reduce((sum, b) => sum + getVal(d, b), 0));
+  const grandTotal = dayTotals.reduce((sum, val) => sum + val, 0);
+
+  const brandTotals = {};
+  brands.forEach(b => {
+    brandTotals[b] = dates.reduce((sum, d) => sum + getVal(d, b), 0);
+  });
+
+  document.getElementById('kpi-total').textContent = grandTotal.toLocaleString('ru');
+  document.getElementById('kpi-days').textContent  = `${dates.length} дней`;
+  document.getElementById('kpi-avg').textContent   = dates.length ? Math.round(grandTotal / dates.length).toLocaleString('ru') : '0';
+
+  const maxVal = dayTotals.length ? Math.max(...dayTotals) : 0;
+  const maxIdx = dayTotals.indexOf(maxVal);
+
+  document.getElementById('kpi-max').textContent = maxVal.toLocaleString('ru');
+  document.getElementById('kpi-max-date').textContent = maxIdx >= 0 ? dates[maxIdx].slice(5) : '—';
+
+  let leader = '—';
+  if (brands.length > 0) {
+    leader = brands.reduce((a, b) => (brandTotals[a] || 0) >= (brandTotals[b] || 0) ? a : b, brands[0]);
+  }
+
+  document.getElementById('kpi-leader').textContent = leader;
+  document.getElementById('kpi-leader-share').textContent =
+    leader !== '—' && grandTotal > 0
+      ? `${((brandTotals[leader] / grandTotal) * 100).toFixed(1)}% доля`
+      : '—';
+
+  const commonOptions = (yLabel, yMax, tickCb) => ({
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: {
+        labels: {
+          color: '#a0aec0',
+          font: { size: 11 },
+          padding: 14,
+          boxWidth: 12
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        ticks: { color: '#718096', font: { size: 10 } },
+        grid: { color: '#1e2535' }
+      },
+      y: {
+        stacked: true,
+        ...(yMax !== undefined ? { min: 0, max: yMax } : {}),
+        ticks: {
+          color: '#718096',
+          ...(tickCb ? { callback: tickCb } : {})
+        },
+        grid: { color: '#2d3748' },
+        title: {
+          display: true,
+          text: yLabel,
+          color: '#4a5568',
+          font: { size: 11 }
+        }
+      }
+    }
+  });
+
+  if (barChart) barChart.destroy();
+  barChart = new Chart(document.getElementById('barCanvas').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: brands.map(b => ({
+        label: b,
+        data: dates.map(d => getVal(d, b)),
+        backgroundColor: COLORS[b] + 'cc',
+        borderColor: COLORS[b],
+        borderWidth: 1,
+        borderRadius: 2,
+        stack: 'stack'
+      }))
+    },
+    options: {
+      ...commonOptions('штук'),
+      plugins: {
+        legend: {
+          labels: {
+            color: '#a0aec0',
+            font: { size: 11 },
+            padding: 14,
+            boxWidth: 12
+          }
+        },
+        tooltip: {
+          callbacks: {
+            footer: items => `Итого: ${items.reduce((s, i) => s + i.raw, 0).toLocaleString('ru')}`
+          }
+        }
+      }
+    }
+  });
+
+  if (shareChart) shareChart.destroy();
+  shareChart = new Chart(document.getElementById('shareCanvas').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: brands.map(b => ({
+        label: b,
+        data: dates.map((d, i) => dayTotals[i] > 0 ? +((getVal(d, b) / dayTotals[i]) * 100).toFixed(2) : 0),
+        backgroundColor: COLORS[b] + 'cc',
+        borderColor: COLORS[b],
+        borderWidth: 1,
+        borderRadius: 2,
+        stack: 'stack'
+      }))
+    },
+    options: {
+      ...commonOptions('доля %', 100, v => v + '%'),
+      plugins: {
+        legend: {
+          labels: {
+            color: '#a0aec0',
+            font: { size: 11 },
+            padding: 14,
+            boxWidth: 12
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw.toFixed(1)}%`
+          }
+        }
+      }
+    }
+  });
+
+  const head = document.getElementById('table-head');
+  const body = document.getElementById('table-body');
+
+  head.innerHTML = `
+    <tr>
+      <th>Дата</th>
+      ${brands.map(b => `<th style="color:${COLORS[b]}">${b}</th><th style="color:${COLORS[b]};opacity:.55">%</th>`).join('')}
+      <th>Итого</th>
+    </tr>
+  `;
+
+  let rows = '';
+
+  dates.forEach((d, i) => {
+    const total = dayTotals[i];
+
+    rows += `
+      <tr>
+        <td>${d.slice(5)}</td>
+        ${brands.map(b => {
+          const val = getVal(d, b);
+          const pct = total > 0 ? ((val / total) * 100).toFixed(1) : '0.0';
+          return `
+            <td>${val > 0 ? val.toLocaleString('ru') : '<span style="color:#4a5568">—</span>'}</td>
+            <td style="color:#718096;font-size:11px">${val > 0 ? pct + '%' : ''}</td>
+          `;
+        }).join('')}
+        <td style="font-weight:700;color:#f7fafc">${total.toLocaleString('ru')}</td>
+      </tr>
+    `;
+  });
+
+  rows += `
+    <tr class="total-row">
+      <td style="color:#667eea">ИТОГО</td>
+      ${brands.map(b => {
+        const total = brandTotals[b];
+        const pct = grandTotal > 0 ? ((total / grandTotal) * 100).toFixed(1) : '0.0';
+        return `
+          <td style="color:${COLORS[b]}">${total.toLocaleString('ru')}</td>
+          <td style="color:${COLORS[b]};font-size:12px">${pct}%</td>
+        `;
+      }).join('')}
+      <td style="color:#f7fafc">${grandTotal.toLocaleString('ru')}</td>
+    </tr>
+  `;
+
+  body.innerHTML = rows;
+}
+
+render();
+</script>
+</body>
+</html>
