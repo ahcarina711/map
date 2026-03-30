@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Полевой глоссарий — Опросник ТТ</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F3EE;
+    --ink: #1A1A1A;
+    --muted: #6B6560;
+    --rule: #D4CFC8;
+    --accent: #D4380D;
+    --accent2: #1A5CFF;
+    --tag-bg: #EAE6DF;
+    --card-bg: #FFFFFF;
+    --section-stripe: #F0EDE7;
+    --tip-bg: #FFF7F5;
+    --tip-border: #D4380D;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    color: #fff;
+    padding: 36px 40px 28px;
+    display: flex;
+    align-items: flex-end;
+    gap: 32px;
+    border-bottom: 4px solid var(--accent);
+  }
+  header .logo-block { flex-shrink: 0; }
+  header .logo-block .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .14em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: .02em;
+    line-height: 1;
+    color: #fff;
+  }
+  header .subtitle {
+    font-size: 13px;
+    color: #9E9990;
+    margin-top: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: .06em;
+  }
+
+  /* ── NAV TABS ── */
+  nav.tabs {
+    background: var(--ink);
+    display: flex;
+    padding: 0 40px;
+    gap: 4px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid #2A2A2A;
+  }
+  nav.tabs a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #888;
+    text-decoration: none;
+    padding: 14px 20px 12px;
+    border-bottom: 3px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  nav.tabs a:hover { color: #fff; }
+  nav.tabs a.active { color: #fff; border-color: var(--accent); }
+
+  /* ── WRAPPER ── */
+  .page { max-width: 960px; margin: 0 auto; padding: 48px 40px 80px; }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .section-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--accent);
+    line-height: 1;
+    min-width: 36px;
+  }
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: .04em;
+    line-height: 1.1;
+  }
+
+  /* ── QUESTION HEADER ── */
+  .q-block { margin-bottom: 36px; }
+  .q-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .q-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: .04em;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .q-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  /* ── OPTION CARDS GRID ── */
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .opt-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--rule);
+    border-radius: 6px;
+    padding: 14px 16px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .opt-card:hover {
+    border-color: var(--accent2);
+    box-shadow: 0 2px 12px rgba(26,92,255,.08);
+  }
+  .opt-card .opt-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .opt-card .opt-detail {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .opt-card.highlight {
+    border-left: 4px solid var(--accent);
+    padding-left: 13px;
+  }
+
+  /* ── ICON BADGE ON CARD ── */
+  .opt-card .icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  /* ── INCOME SCALE ── */
+  .income-scale {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .income-item {
+    flex: 1 1 140px;
+    background: var(--card-bg);
+    border: 1.5px solid var(--rule);
+    border-radius: 6px;
+    padding: 12px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .income-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .income-item.i5::before { background: #D4380D; }
+  .income-item.i4::before { background: #FA8C16; }
+  .income-item.i3::before { background: #FADB14; }
+  .income-item.i2::before { background: #73D13D; }
+  .income-item.i1::before { background: #52C41A; }
+
+  .income-item .inc-label {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
+  .income-item .inc-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .income-item .inc-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  /* ── METRIC CARD (numeric fields) ── */
+  .metric-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--rule);
+    border-radius: 6px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .metric-card .mc-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--rule);
+    line-height: 1;
+    min-width: 60px;
+  }
+  .metric-card .mc-body {}
+  .metric-card .mc-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .metric-card .mc-text {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── TIP BOX ── */
+  .tip {
+    background: var(--tip-bg);
+    border-left: 4px solid var(--tip-border);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #5a2a1a;
+    line-height: 1.55;
+  }
+  .tip strong {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: .08em;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 5px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1.5px solid var(--rule);
+    margin: 40px 0;
+  }
+
+  /* ── SECTION PANEL ── */
+  .section-panel { margin-bottom: 56px; }
+  .section-panel:last-child { margin-bottom: 0; }
+
+  /* ── TOP3 TABLE ── */
+  .top3-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .top3-item {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1.5px solid var(--rule);
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+  }
+  .top3-item .rank {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .top3-item .rank-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── TT TYPE CARDS ── */
+  .tt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .tt-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    padding: 18px 18px 16px;
+    transition: border-color .15s, transform .15s;
+  }
+  .tt-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,.07);
+  }
+  .tt-card .tt-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .tt-card .tt-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: .04em;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .tt-card .tt-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    background: var(--tag-bg);
+    color: var(--muted);
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+  .tag.red { background: #FFF1EE; color: var(--accent); }
+  .tag.blue { background: #EFF4FF; color: var(--accent2); }
+  .tt-card .tt-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── PAGE SECTIONS (hide/show) ── */
+  .section-view { display: none; }
+  .section-view.active { display: block; }
+
+  /* Print */
+  @media print {
+    nav.tabs { display: none; }
+    .section-view { display: block !important; }
+    body { font-size: 13px; }
+    header { padding: 20px 24px; }
+    header h1 { font-size: 36px; }
+    .page { padding: 24px; }
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 24px 20px 20px; flex-direction: column; gap: 8px; }
+    header h1 { font-size: 38px; }
+    nav.tabs { padding: 0 12px; overflow-x: auto; }
+    .page { padding: 28px 16px 60px; }
+    .options-grid, .tt-grid { grid-template-columns: 1fr; }
+    .income-scale { flex-direction: column; }
+    .top3-row { flex-direction: column; }
+    .metric-card .mc-num { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-block">
+    <div class="badge">Полевой глоссарий · Field Glossary</div>
+    <h1>ОПРОСНИК ТТ</h1>
+    <div class="subtitle">СПРАВОЧНИК ДЛЯ ПОЛЕВОЙ СТРУКТУРЫ · v1.0</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <a href="#" class="active" onclick="show('questions', this)">📋 Вопросы</a>
+  <a href="#" onclick="show('tt', this)">🏪 Тип ТТ</a>
+</nav>
+
+<!-- ═══════════════ SECTION: QUESTIONS ═══════════════ -->
+<div class="section-view active" id="sec-questions">
+<div class="page">
+
+  <!-- ── ТИП ЛОКАЦИИ ── -->
+  <div class="section-panel">
+    <div class="section-title">
+      <div class="section-num">01</div>
+      <div class="section-label">ТИП ЛОКАЦИИ</div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-label">Описание вопроса</div>
+      <div class="q-title">ОПРЕДЕЛИТЕ ТИП ЛОКАЦИИ ТОРГОВОЙ ТОЧКИ</div>
+      <div class="q-desc">Выберите одну категорию, которая наиболее точно описывает окружение ТТ. Ориентируйтесь на преобладающий тип объектов в радиусе ~200 м.</div>
+
+      <div class="tip">
+        <strong>💡 Совет полевому сотруднику</strong>
+        Стойте перед входом в ТТ и осмотритесь вокруг. Что преобладает — офисы, жилые дома, склады? Выбирайте категорию по большинству объектов вокруг, а не по единственному зданию рядом.
+      </div>
+
+      <div class="options-grid">
+        <div class="opt-card">
+          <span class="icon">🏢</span>
+          <div class="opt-name">ОФИСНАЯ ЗОНА</div>
+          <div class="opt-detail">ТТ рядом с офисными зданиями, бизнес-центрами, деловыми кварталами.</div>
+        </div>
+        <div class="opt-card">
+          <span class="icon">🏭</span>
+          <div class="opt-name">ИНДУСТРИАЛЬНАЯ ЗОНА</div>
+          <div class="opt-detail">ТТ вблизи складских и промышленных объектов, заводов, логистических комплексов.</div>
+        </div>
+        <div class="opt-card">
+          <span class="icon">🛒</span>
+          <div class="opt-name">КОММЕРЧЕСКАЯ ЗОНА / ТЦ</div>
+          <div class="opt-detail">ТТ находится в торгово-промышленных локациях, рядом с торговыми центрами, рынками.</div>
+        </div>
+        <div class="opt-card">
+          <span class="icon">🏙️</span>
+          <div class="opt-name">ЖИЛЫЕ МНОГОКВАРТИРНЫЕ ДОМА</div>
+          <div class="opt-detail">ТТ рядом с многоэтажной жилой застройкой, спальными районами с высотками.</div>
+        </div>
+        <div class="opt-card">
+          <span class="icon">🏡</span>
+          <div class="opt-name">ЖИЛЫЕ ЧАСТНЫЕ ДОМА</div>
+          <div class="opt-detail">ТТ в районах с частной застройкой, таунхаусами, дачными кооперативами.</div>
+        </div>
+        <div class="opt-card">
+          <span class="icon">🌳</span>
+          <div class="opt-name">ОТДЫХ</div>
+          <div class="opt-detail">ТТ рядом с зонами отдыха: парками, набережными, стадионами, спортивными объектами.</div>
+        </div>
+        <div class="opt-card">
+          <span class="icon">🎉</span>
+          <div class="opt-name">ПРАЗДНИЧНЫЕ МЕСТА</div>
+          <div class="opt-detail">ТТ рядом с площадями и местами массовых скоплений: центральные площади, ярмарки.</div>
+        </div>
+        <div class="opt-card">
+          <span class="icon">🎭</span>
+          <div class="opt-name">РАЗВЛЕКАТЕЛЬНЫЕ ЦЕНТРЫ</div>
+          <div class="opt-detail">ТТ вблизи объектов развлечений и досуга: кинотеатры, клубы, боулинг, аттракционы.</div>
+        </div>
+        <div class="opt-card">
+          <span class="icon">🎓</span>
+          <div class="opt-name">ОБРАЗОВАТЕЛЬНЫЕ УЧРЕЖДЕНИЯ</div>
+          <div class="opt-detail">ТТ рядом с учебными заведениями: школы, колледжи, университеты, техникумы.</div>
+        </div>
+        <div class="opt-card">
+          <span class="icon">❓</span>
+          <div class="opt-name">ДРУГОЕ</div>
+          <div class="opt-detail">Если ни одна категория не подходит — выбирайте «Другое» и уточняйте в комментарии.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── ПАЧКОМЕСТА ── -->
+  <div class="section-panel">
+    <div class="section-title">
+      <div class="section-num">02</div>
+      <div class="section-label">ПАЧКОМЕСТА</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="mc-num">∑</div>
+      <div class="mc-body">
+        <div class="mc-title">ОБЩЕЕ КОЛ-ВО ПАЧКОМЕСТ В ТТ (ОБОРУДОВАНИЕ + ВТОРЫЕ МЕСТА)</div>
+        <div class="mc-text">Посчитайте <strong>суммарное</strong> количество пачкомест: те, что расположены на основном табачном оборудовании <em>плюс</em> дополнительные (вторые) места выкладки (стойки, крючки, дополнительные полки).<br><br>
+        <strong>Пачкоместо</strong> = одна позиция (фейсинг) для одной SKU на полке или оборудовании.</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <strong>💡 Как считать правильно</strong>
+      Обойдите весь торговый зал. Считайте каждый слот/ячейку отдельно, даже если в ней стоит одна и та же марка. Второе место — любая выкладка табака ВНЕ основного оборудования (прикассовая зона, отдельная стойка и т.д.).
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── ACU30 ── -->
+  <div class="section-panel">
+    <div class="section-title">
+      <div class="section-num">03</div>
+      <div class="section-label">ACU30</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="mc-num">10</div>
+      <div class="mc-body">
+        <div class="mc-title">КОЛ-ВО ПОКУПАТЕЛЕЙ ОТ 21 ДО 30 ЛЕТ ИЗ 10 ЧЕЛОВЕК</div>
+        <div class="mc-text">Визуально оцените: из <strong>10 случайных покупателей</strong>, заходящих в ТТ, сколько на вид попадают в возраст <strong>21–30 лет</strong>? Укажите число от 0 до 10.<br><br>
+        Наблюдение проводится у входа или внутри точки в течение 5–10 минут в рабочее время.</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <strong>💡 Как оценивать визуально</strong>
+      Ориентируйтесь на внешние признаки: студенческий/молодёжный стиль, отсутствие выраженных возрастных признаков. Не спрашивайте возраст — только визуальная оценка. Если трафик низкий — наблюдайте дольше и экстраполируйте на 10 человек.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── СРЕДНИЙ ВОЗРАСТ РИТЕЙЛЕРА ── -->
+  <div class="section-panel">
+    <div class="section-title">
+      <div class="section-num">04</div>
+      <div class="section-label">СРЕДНИЙ ВОЗРАСТ РИТЕЙЛЕРОВ В ТТ</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="mc-num">~</div>
+      <div class="mc-body">
+        <div class="mc-title">УКАЗАТЬ СРЕДНИЙ ВОЗРАСТ РИТЕЙЛЕРА В ТТ</div>
+        <div class="mc-text">Укажите примерный возраст <strong>владельца или управляющего</strong> торговой точки (не продавца-кассира). Если собственник — сетевая компания, указывайте возраст управляющего/ответственного лица.<br><br>
+        Укажите число в полных годах. Если неизвестно — оцените визуально.</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <strong>💡 Зачем это нужно</strong>
+      Возраст владельца влияет на восприимчивость к новым брендам и форматам. Молодые ритейлеры (до 35) охотнее берут инновационные категории; старшие (50+) предпочитают проверенные позиции.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── ПОРОГ ДОХОДНОСТИ ── -->
+  <div class="section-panel">
+    <div class="section-title">
+      <div class="section-num">05</div>
+      <div class="section-label">ПОРОГ ДОХОДНОСТИ ПОКУПАТЕЛЕЙ</div>
+    </div>
+
+    <div class="q-desc" style="margin-bottom: 16px;">Определите уровень дохода <strong>среднестатистического покупателя</strong> данной ТТ. Ориентируйтесь на внешние признаки: одежда, транспорт, корзина покупок, тип жилья вокруг.</div>
+
+    <div class="tip">
+      <strong>💡 Как определить уровень дохода визуально</strong>
+      Смотрите на: качество одежды и аксессуаров, тип транспорта у ТТ (пешком/авто/такси/классы авто), средний чек в кассе, тип района. Ориентируйтесь на большинство, а не на единичные случаи.
+    </div>
+
+    <div class="income-scale">
+      <div class="income-item i1">
+        <div class="inc-label">ВЫСОКИЙ КЛАСС</div>
+        <div class="inc-desc">Люксовые марки, дорогое авто, брендовые аксессуары. Премиум-район.</div>
+      </div>
+      <div class="income-item i2">
+        <div class="inc-label">ВЫШЕ СРЕДНЕГО</div>
+        <div class="inc-desc">Качественная одежда, авто среднего+ класса, покупки «без ценника».</div>
+      </div>
+      <div class="income-item i3">
+        <div class="inc-label">СРЕДНИЙ КЛАСС</div>
+        <div class="inc-desc">Стандартная одежда, бюджетное авто или общественный транспорт, смотрят на цены.</div>
+      </div>
+      <div class="income-item i4">
+        <div class="inc-label">НИЖЕ СРЕДНЕГО</div>
+        <div class="inc-desc">Повседневная одежда, преимущественно пешком или общественный транспорт, чувствительны к цене.</div>
+      </div>
+      <div class="income-item i5">
+        <div class="inc-label">НИЗКИЙ КЛАСС</div>
+        <div class="inc-desc">Признаки экономии, покупки по минимуму, поиск акций и скидок, ветхое жильё рядом.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── ТОП-3 БРЕНДА ── -->
+  <div class="section-panel">
+    <div class="section-title">
+      <div class="section-num">06</div>
+      <div class="section-label">ТОП-3 САМЫХ ПРОДАВАЕМЫХ БРЕНДА</div>
+    </div>
+
+    <div class="q-desc" style="margin-bottom: 16px;">Выберите <strong>топ-3 SKU</strong> из всего табачного ассортимента ТТ — те позиции, которые продаются чаще всего. Уточните у продавца или ритейлера напрямую.</div>
+
+    <div class="tip">
+      <strong>💡 Как узнать топ-3 правильно</strong>
+      Спросите: <em>«Какие три пачки у вас покупают чаще всего?»</em> — это прямой и понятный вопрос. Если есть данные по заказу/остаткам — используйте их. Обращайте внимание на позиции с минимальным остатком: они уходят быстрее.
+    </div>
+
+    <div class="top3-row">
+      <div class="top3-item">
+        <div class="rank">1</div>
+        <div class="rank-label">Бренд / SKU #1<br><span style="font-size:11px;color:var(--muted)">самый продаваемый</span></div>
+      </div>
+      <div class="top3-item">
+        <div class="rank">2</div>
+        <div class="rank-label">Бренд / SKU #2<br><span style="font-size:11px;color:var(--muted)">второй по продажам</span></div>
+      </div>
+      <div class="top3-item">
+        <div class="rank">3</div>
+        <div class="rank-label">Бренд / SKU #3<br><span style="font-size:11px;color:var(--muted)">третий по продажам</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+</div><!-- /sec-questions -->
+
+
+<!-- ═══════════════ SECTION: ТИП ТТ ═══════════════ -->
+<div class="section-view" id="sec-tt">
+<div class="page">
+
+  <div class="section-title">
+    <div class="section-num">ТТ</div>
+    <div class="section-label">ТИП ТОРГОВОЙ ТОЧКИ</div>
+  </div>
+
+  <div class="q-desc" style="margin-bottom: 20px;">Определите формат торговой точки по совокупности признаков: площадь, система продаж, количество касс, доля свободного доступа к товарам.</div>
+
+  <div class="tip">
+    <strong>💡 Как определить тип ТТ — алгоритм</strong>
+    1. Оцените площадь торгового зала (на глаз). 2. Есть прилавок или самообслуживание? 3. Сколько касс? 4. Какой основной ассортимент? 5. Выберите тип, который подходит по большинству критериев.
+  </div>
+
+  <div class="tt-grid">
+
+    <div class="tt-card">
+      <span class="tt-icon">🏪</span>
+      <div class="tt-name">ТРАДИЦИОННЫЙ МАГАЗИН</div>
+      <div class="tt-tags">
+        <span class="tag">до 50 м²</span>
+        <span class="tag">1 касса</span>
+        <span class="tag red">прилавок</span>
+      </div>
+      <div class="tt-desc">Продажа через продавца. Большинство товаров, включая табак, отпускается через прилавок. В свободном доступе не более 30% ассортимента.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">🛍️</span>
+      <div class="tt-name">МИНИМАРКЕТ</div>
+      <div class="tt-tags">
+        <span class="tag">50–150 м²</span>
+        <span class="tag">1–5 касс</span>
+        <span class="tag blue">самообслуживание</span>
+      </div>
+      <div class="tt-desc">Небольшой магазин самообслуживания. Более 50% ассортимента в свободном доступе. Полноценные торговые полки и несколько холодильников.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">⛽</span>
+      <div class="tt-name">АЗС</div>
+      <div class="tt-tags">
+        <span class="tag">автозаправка</span>
+        <span class="tag">попутная покупка</span>
+      </div>
+      <div class="tt-desc">Торговая точка на территории автозаправочной станции. Ключевая аудитория — автомобилисты. Высокая доля импульсных покупок.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">🏬</span>
+      <div class="tt-name">СУПЕРМАРКЕТ</div>
+      <div class="tt-tags">
+        <span class="tag">5–10 касс</span>
+        <span class="tag blue">самообслуживание</span>
+        <span class="tag">широкий ассортимент</span>
+      </div>
+      <div class="tt-desc">Крупный магазин самообслуживания. Покупки преимущественно плановые. Высокая роль промо-акций и выкладки на полке.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">🏢</span>
+      <div class="tt-name">ГИПЕРМАРКЕТ</div>
+      <div class="tt-tags">
+        <span class="tag">от 10 касс</span>
+        <span class="tag blue">самообслуживание</span>
+        <span class="tag">максимальный ассортимент</span>
+      </div>
+      <div class="tt-desc">Формат супермаркета увеличенного масштаба. Максимально широкий ассортимент, высокая проходимость. Часто якорный арендатор ТЦ.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">🏠</span>
+      <div class="tt-name">КИОСК</div>
+      <div class="tt-tags">
+        <span class="tag">очень маленький</span>
+        <span class="tag red">окно</span>
+        <span class="tag">ограниченный ассортимент</span>
+      </div>
+      <div class="tt-desc">Очень небольшая торговая точка с продажей через окно. Ограниченный ассортимент: табак, напитки, пресса. Без входа для покупателей.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">🚌</span>
+      <div class="tt-name">ОСТАНОВОЧНЫЙ ПАВИЛЬОН</div>
+      <div class="tt-tags">
+        <span class="tag">до 20–30 м²</span>
+        <span class="tag red">прилавок / окно</span>
+        <span class="tag">остановка транспорта</span>
+      </div>
+      <div class="tt-desc">ТТ на остановке общественного транспорта. Продажи через окно или прилавок. Ассортимент: напитки, перекусы, табак. Высокий поток пешеходов.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">🍾</span>
+      <div class="tt-name">АЛКОМАРКЕТ</div>
+      <div class="tt-tags">
+        <span class="tag">алкоголь 60–70%+</span>
+        <span class="tag">специализация</span>
+      </div>
+      <div class="tt-desc">Специализированный магазин. Алкоголь составляет более 60–70% ассортимента. Дополняется перекусами, напитками и табаком.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">🍺</span>
+      <div class="tt-name">ПИВНОЙ МАГАЗИН</div>
+      <div class="tt-tags">
+        <span class="tag">пиво 70%+</span>
+        <span class="tag">разливное</span>
+        <span class="tag">специализация</span>
+      </div>
+      <div class="tt-desc">Специализированная точка. Пиво (бутылочное, баночное, разливное) занимает более 70% продаж. Дополняется закусками.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">🚬</span>
+      <div class="tt-name">ТОБАКОНИСТ</div>
+      <div class="tt-tags">
+        <span class="tag red">табак / никотин 100%</span>
+        <span class="tag">специализация</span>
+      </div>
+      <div class="tt-desc">Специализированный магазин табачной и никотиновой продукции. Максимальный ассортимент в категории. Экспертная аудитория.</div>
+    </div>
+
+    <div class="tt-card">
+      <span class="tt-icon">🏙️</span>
+      <div class="tt-name">БУТИК В ТРЦ</div>
+      <div class="tt-tags">
+        <span class="tag">малая площадь</span>
+        <span class="tag">ТЦ / ТРЦ</span>
+        <span class="tag">минимальный ассортимент</span>
+      </div>
+      <div class="tt-desc">Небольшая точка внутри торгового центра с минимальным ассортиментом (табак + вода). Высокий пешеходный трафик ТЦ.</div>
+    </div>
+
+  </div><!-- /tt-grid -->
+
+  <!-- Quick reference table -->
+  <div style="margin-top: 40px;">
+    <div class="section-title" style="margin-bottom: 20px;">
+      <div class="section-num" style="font-size: 30px;">?</div>
+      <div class="section-label" style="font-size: 20px;">БЫСТРАЯ ШПАРГАЛКА: КАК ВЫБРАТЬ ТИП</div>
+    </div>
+
+    <div class="tip" style="font-size: 14px;">
+      <strong>🔍 АЛГОРИТМ ВЫБОРА</strong>
+      <strong style="color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;display:block;margin:8px 0 4px;">1. Продажа через окно/прилавок без входа?</strong>
+      → КИОСК или ОСТАНОВОЧНЫЙ ПАВИЛЬОН (по расположению у остановки)<br><br>
+      <strong style="color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;display:block;margin:8px 0 4px;">2. Находится на АЗС?</strong>
+      → АЗС<br><br>
+      <strong style="color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;display:block;margin:8px 0 4px;">3. Основной товар — табак / пиво / алкоголь?</strong>
+      → ТОБАКОНИСТ / ПИВНОЙ / АЛКОМАРКЕТ<br><br>
+      <strong style="color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;display:block;margin:8px 0 4px;">4. Находится внутри ТРЦ, маленькая площадь?</strong>
+      → БУТИК В ТРЦ<br><br>
+      <strong style="color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;display:block;margin:8px 0 4px;">5. Есть вход, продажа через прилавок, &lt;50 м²?</strong>
+      → ТРАДИЦИОННЫЙ МАГАЗИН<br><br>
+      <strong style="color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;display:block;margin:8px 0 4px;">6. Самообслуживание 50–150 м², 1–5 касс?</strong>
+      → МИНИМАРКЕТ<br><br>
+      <strong style="color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;display:block;margin:8px 0 4px;">7. Самообслуживание, 5–10 касс?</strong>
+      → СУПЕРМАРКЕТ<br><br>
+      <strong style="color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;display:block;margin:8px 0 4px;">8. Самообслуживание, 10+ касс, огромная площадь?</strong>
+      → ГИПЕРМАРКЕТ
+    </div>
+  </div>
+
+</div><!-- /page -->
+</div><!-- /sec-tt -->
+
+<script>
+  function show(section, el) {
+    document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav.tabs a').forEach(a => a.classList.remove('active'));
+    document.getElementById('sec-' + section).classList.add('active');
+    el.classList.add('active');
+    window.scrollTo(0, 0);
+    return false;
+  }
+</script>
+</body>
+</html>
