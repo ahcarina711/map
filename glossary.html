@@ -254,6 +254,33 @@
     line-height: 1.5;
   }
 
+  /* ── IMAGE BLOCK INSIDE METRIC ── */
+  .mc-figure {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+  }
+  .mc-figure-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .mc-figure-subtitle {
+    font-size: 13px;
+    color: var(--accent2);
+    margin-bottom: 12px;
+  }
+  .mc-figure img {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    display: block;
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    background: #fff;
+  }
+
   /* ── TIP BOX ── */
   .tip {
     background: var(--tip-bg);
@@ -390,6 +417,8 @@
     .income-scale { flex-direction: column; }
     .top3-row { flex-direction: column; }
     .metric-card .mc-num { font-size: 40px; }
+    .metric-card { flex-direction: column; }
+    .metric-card .mc-num { min-width: auto; }
   }
 </style>
 </head>
@@ -497,8 +526,16 @@
       <div class="mc-num">∑</div>
       <div class="mc-body">
         <div class="mc-title">ОБЩЕЕ КОЛ-ВО ПАЧКОМЕСТ В ТТ (ОБОРУДОВАНИЕ + ВТОРЫЕ МЕСТА)</div>
-        <div class="mc-text">Посчитайте <strong>суммарное</strong> количество пачкомест: те, что расположены на табачном оборудовании.<br><br>
-        <strong>Пачкоместо</strong> = одна позиция (фейсинг) для одной SKU на полке или оборудовании.</div>
+        <div class="mc-text">
+          Посчитайте <strong>суммарное</strong> количество пачкомест: те, что расположены на табачном оборудовании.<br><br>
+          <strong>Пачкоместо</strong> = одна позиция (фейсинг) для одной SKU на полке или оборудовании.
+        </div>
+
+        <div class="mc-figure">
+          <div class="mc-figure-title">Пример распределения продукции BAT на оборудовании BAT и конкурентов</div>
+          <div class="mc-figure-subtitle">Синим отмечены пачкоместа с продукцией BAT</div>
+          <img src="Пачкоместа.png" alt="Пример распределения продукции BAT на оборудовании BAT и конкурентов">
+        </div>
       </div>
     </div>
 
